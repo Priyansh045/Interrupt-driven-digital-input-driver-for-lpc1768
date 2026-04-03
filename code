@@ -1,0 +1,43 @@
+#include "LPC17xx.h"   // Main chip header file
+
+// ─── STEP A: This function runs AUTOMATICALLY when button is pressed ───
+void EINT3_IRQHandler(void)  
+{
+    // Check if interrupt came from P2.10
+    if (LPC_GPIOINT->IO2IntStatR & (1 << 10))  
+    {
+        // YOUR ACTION HERE — Toggle an LED on P1.18
+        LPC_GPIO1->FIOPIN ^= (1 << 18);
+
+        // Clear the interrupt (VERY IMPORTANT — reset the doorbell)
+        LPC_GPIOINT->IO2IntClr = (1 << 10);
+    }
+}
+
+// ─── STEP B: Setup function — runs once at the beginning ───
+void GPIO_Interrupt_Init(void)
+{
+    // 1. Set P2.10 as INPUT (the button pin)
+    LPC_GPIO2->FIODIR &= ~(1 << 10);
+
+    // 2. Set P1.18 as OUTPUT (the LED pin)
+    LPC_GPIO1->FIODIR |= (1 << 18);
+
+    // 3. Configure interrupt to trigger on RISING EDGE (0 → 1)
+    LPC_GPIOINT->IO2IntEnR |= (1 << 10);
+
+    // 4. Enable the interrupt in NVIC (the interrupt manager)
+    NVIC_EnableIRQ(EINT3_IRQn);
+}
+
+// ─── STEP C: Main function ───
+int main(void)
+{
+    GPIO_Interrupt_Init();   // Setup everything
+
+    while(1)
+    {
+        // Chip is free to do other work here
+        // Interrupt will handle the button automatically!
+    }
+}
