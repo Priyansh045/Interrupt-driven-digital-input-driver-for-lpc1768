@@ -1,39 +1,35 @@
 #include "LPC17xx.h"
 
-// ─── INTERRUPT HANDLER — runs automatically when button on p26 is pressed ───
 void EINT3_IRQHandler(void)
 {
-    // Check if interrupt came from P2.0 (mbed pin p26)
     if (LPC_GPIOINT->IO2IntStatR & (1 << 0))
     {
-        // Toggle LED1 (P1.18) on mbed board
         LPC_GPIO1->FIOPIN ^= (1 << 18);
-
-        // Clear the interrupt flag
         LPC_GPIOINT->IO2IntClr = (1 << 0);
     }
 }
 
-// ─── INITIALIZATION — runs once at startup ───
 void GPIO_Interrupt_Init(void)
 {
-    // 1. Set P2.0 (mbed p26) as INPUT for button
+    // Enable internal pull-down resistor on P2.0 — no external resistor needed!
+    LPC_PINCON->PINMODE4 |= (3 << 0);
+
+    // Set P2.0 (mbed p26) as INPUT for button
     LPC_GPIO2->FIODIR &= ~(1 << 0);
 
-    // 2. Set P1.18 (mbed LED1) as OUTPUT for LED
+    // Set P1.18 (mbed LED1) as OUTPUT for LED
     LPC_GPIO1->FIODIR |= (1 << 18);
 
-    // 3. Enable Rising Edge interrupt on P2.0
+    // Enable Rising Edge interrupt on P2.0
     LPC_GPIOINT->IO2IntEnR |= (1 << 0);
 
-    // 4. Clear any pending interrupt before enabling
+    // Clear any pending interrupt before enabling
     LPC_GPIOINT->IO2IntClr = (1 << 0);
 
-    // 5. Enable EINT3 in NVIC
+    // Enable EINT3 in NVIC
     NVIC_EnableIRQ(EINT3_IRQn);
 }
 
-// ─── MAIN ───
 int main(void)
 {
     GPIO_Interrupt_Init();
