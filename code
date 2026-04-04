@@ -1,46 +1,44 @@
-#include "LPC17xx.h"   // Main chip header file
+#include "LPC17xx.h"
 
-// ─── STEP A: This function runs AUTOMATICALLY when button is pressed ───
-void EINT3_IRQHandler(void)  
+// ─── INTERRUPT HANDLER — runs automatically when button on p26 is pressed ───
+void EINT3_IRQHandler(void)
 {
-    // Check if interrupt came from P2.10
-    if (LPC_GPIOINT->IO2IntStatR & (1 << 10))  
+    // Check if interrupt came from P2.0 (mbed pin p26)
+    if (LPC_GPIOINT->IO2IntStatR & (1 << 0))
     {
-        // Toggle an LED on P1.18
+        // Toggle LED1 (P1.18) on mbed board
         LPC_GPIO1->FIOPIN ^= (1 << 18);
 
-        // Clear the interrupt (reset the doorbell)
-        LPC_GPIOINT->IO2IntClr = (1 << 10);
+        // Clear the interrupt flag
+        LPC_GPIOINT->IO2IntClr = (1 << 0);
     }
 }
 
-// ─── STEP B: Setup function — runs once at the beginning ───
+// ─── INITIALIZATION — runs once at startup ───
 void GPIO_Interrupt_Init(void)
 {
-    // 1. Set P2.10 as INPUT (the button pin)
-    LPC_GPIO2->FIODIR &= ~(1 << 10);
+    // 1. Set P2.0 (mbed p26) as INPUT for button
+    LPC_GPIO2->FIODIR &= ~(1 << 0);
 
-    // 2. Set P1.18 as OUTPUT (the LED pin)
+    // 2. Set P1.18 (mbed LED1) as OUTPUT for LED
     LPC_GPIO1->FIODIR |= (1 << 18);
 
-    // 3. Configure interrupt to trigger on RISING EDGE (0 → 1)
-    LPC_GPIOINT->IO2IntEnR |= (1 << 10);
+    // 3. Enable Rising Edge interrupt on P2.0
+    LPC_GPIOINT->IO2IntEnR |= (1 << 0);
 
-    // 4. Clear any old/pending interrupt BEFORE enabling (NEW LINE ADDED)
-    LPC_GPIOINT->IO2IntClr = (1 << 10);
+    // 4. Clear any pending interrupt before enabling
+    LPC_GPIOINT->IO2IntClr = (1 << 0);
 
-    // 5. Enable the interrupt in NVIC (the interrupt manager)
+    // 5. Enable EINT3 in NVIC
     NVIC_EnableIRQ(EINT3_IRQn);
 }
 
-// ─── STEP C: Main function ───
+// ─── MAIN ───
 int main(void)
 {
-    GPIO_Interrupt_Init();   // Setup everything
-
+    GPIO_Interrupt_Init();
     while(1)
     {
-        // Chip is free to do other work here
-        // Interrupt will handle the button automatically!
+        // CPU free — interrupt handles button automatically
     }
 }
