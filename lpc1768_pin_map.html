@@ -1,0 +1,139 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-mono, monospace); }
+  .wrap { padding: 1rem 0.5rem; max-width: 780px; margin: 0 auto; }
+  h2 { text-align: center; font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .sub { text-align: center; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 14px; }
+  .leg { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-text-secondary); }
+  .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .section { margin-bottom: 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .sec-head { padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 6px; }
+  .sec-head.p0 { background: #1a2a1a; color: #7ec87e; }
+  .sec-head.p1 { background: #2a1a1a; color: #e07070; }
+  .sec-head.p2 { background: #1a2a1a; color: #7ec87e; }
+  .sec-head.p34 { background: #2a2a2a; color: #aaa; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { background: var(--color-background-secondary); color: var(--color-text-secondary); font-weight: 500; padding: 4px 8px; text-align: left; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  td { padding: 3px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--color-background-secondary); }
+  .badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; white-space: nowrap; }
+  .bg-comm    { background: #3a1f00; color: #f5a623; }
+  .bg-gpio    { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .bg-analog  { background: #1f1a00; color: #f5c842; }
+  .bg-pwm     { background: #001a2a; color: #42b0f5; }
+  .bg-spi     { background: #1a0a2a; color: #b07af5; }
+  .bg-eth     { background: #001a0a; color: #42f5a0; }
+  .bg-usb     { background: #1a001a; color: #f542e0; }
+  .bg-led     { background: #002200; color: #66ff66; }
+  .bg-int     { background: #220000; color: #ff6666; }
+  .bg-our-code { background: #003300; color: #00ff88; border: 1px solid #00cc66; }
+  .bg-old-note { background: #2a1500; color: #ff8c42; border: 1px solid #cc5500; text-decoration: line-through; opacity: 0.6; }
+  .star { color: #f5c842; margin-left: 2px; }
+</style>
+<div class="wrap">
+  <h2>LPC1768 complete pin map</h2>
+  <div class="sub">All ports · all pins · functions · interrupt support</div>
+
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:#4a90d9"></div>General GPIO</div>
+    <div class="leg"><div class="dot" style="background:#f5c842"></div>Analog (ADC/DAC)</div>
+    <div class="leg"><div class="dot" style="background:#42b0f5"></div>PWM / Timer</div>
+    <div class="leg"><div class="dot" style="background:#f5a623"></div>Comm (UART/SPI/I2C/CAN)</div>
+    <div class="leg"><div class="dot" style="background:#f542e0"></div>USB / Ethernet</div>
+  </div>
+
+  <!-- PORT 0 -->
+  <div class="section">
+    <div class="sec-head p0">PORT 0 — 32 pins ✅ Supports GPIO Interrupts</div>
+    <table>
+      <tr><th>Pin</th><th>mbed label</th><th>Functions</th><th>Type</th></tr>
+      <tr><td>P0.0</td><td>p29</td><td>CAN RD / UART3 TX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.1</td><td>p30</td><td>CAN TD / UART3 RX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.2</td><td>p10</td><td>UART0 TX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.3</td><td>p9</td><td>UART0 RX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.4</td><td>—</td><td>I2S RX / CAN RD / GPIO</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P0.5</td><td>—</td><td>I2S TX / CAN TD / GPIO</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P0.6</td><td>—</td><td>I2S RX / SPI SSEL / GPIO</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P0.7</td><td>—</td><td>I2S TX / SPI SCK / GPIO</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P0.8</td><td>—</td><td>UART1 TX / SPI MISO / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.9</td><td>—</td><td>UART1 RX / SPI MOSI / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.10</td><td>p28</td><td>I2C2 SCL / UART2 TX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.11</td><td>p27</td><td>I2C2 SDA / UART2 RX / GPIO</td><td><span class="badge bg-comm">Comm / GPIO</span></td></tr>
+      <tr><td>P0.15</td><td>p13</td><td>SPI0 SCK / UART1 TX / GPIO</td><td><span class="badge bg-spi">SPI / Comm</span></td></tr>
+      <tr><td>P0.16</td><td>p14</td><td>SPI0 SSEL / UART1 RX / GPIO</td><td><span class="badge bg-spi">SPI / Comm</span></td></tr>
+      <tr><td>P0.17</td><td>p6</td><td>SPI0 MISO / GPIO</td><td><span class="badge bg-spi">SPI</span></td></tr>
+      <tr><td>P0.18</td><td>p5</td><td>SPI0 MOSI / GPIO</td><td><span class="badge bg-spi">SPI</span></td></tr>
+      <tr><td>P0.23</td><td>p15</td><td>ADC0.0 / GPIO</td><td><span class="badge bg-analog">Analog In</span></td></tr>
+      <tr><td>P0.24</td><td>p16</td><td>ADC0.1 / GPIO</td><td><span class="badge bg-analog">Analog In</span></td></tr>
+      <tr><td>P0.25</td><td>p17</td><td>ADC0.2 / DAC / GPIO</td><td><span class="badge bg-analog">Analog In</span></td></tr>
+      <tr><td>P0.26</td><td>p18</td><td>ADC0.3 / DAC out / GPIO</td><td><span class="badge bg-analog">Analog In/Out</span></td></tr>
+      <tr><td>P0.27</td><td>—</td><td>I2C0 SDA / USB SDA / GPIO</td><td><span class="badge bg-comm">Comm</span></td></tr>
+      <tr><td>P0.28</td><td>—</td><td>I2C0 SCL / USB SCL / GPIO</td><td><span class="badge bg-comm">Comm</span></td></tr>
+      <tr><td>P0.29</td><td>D+</td><td>USB D+ (Host/Device/OTG)</td><td><span class="badge bg-usb">USB</span></td></tr>
+      <tr><td>P0.30</td><td>D−</td><td>USB D− (Host/Device/OTG)</td><td><span class="badge bg-usb">USB</span></td></tr>
+    </table>
+  </div>
+
+  <!-- PORT 1 -->
+  <div class="section">
+    <div class="sec-head p1">PORT 1 — 32 pins ❌ No GPIO Interrupts</div>
+    <table>
+      <tr><th>Pin</th><th>mbed label</th><th>Functions</th><th>Type</th></tr>
+      <tr><td>P1.0</td><td>—</td><td>Ethernet TXD0 / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.1</td><td>—</td><td>Ethernet TXD1 / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.4</td><td>—</td><td>Ethernet TX EN / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.8</td><td>—</td><td>Ethernet CRS / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.9</td><td>—</td><td>Ethernet RXD0 / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.10</td><td>—</td><td>Ethernet RXD1 / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.14</td><td>—</td><td>Ethernet RX ER / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.15</td><td>—</td><td>Ethernet REF CLK / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.16</td><td>—</td><td>Ethernet MDC / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.17</td><td>—</td><td>Ethernet MDIO / GPIO</td><td><span class="badge bg-eth">Ethernet</span></td></tr>
+      <tr><td>P1.18</td><td>LED1 ★</td><td>PWM1.1 / GPIO ← onboard LED &nbsp;<span class="badge bg-led">✅ LED in our code</span></td><td><span class="badge bg-led">PWM / LED</span></td></tr>
+      <tr><td>P1.20</td><td>LED2 ★</td><td>PWM1.2 / GPIO ← onboard LED</td><td><span class="badge bg-led">PWM / LED</span></td></tr>
+      <tr><td>P1.21</td><td>LED3 ★</td><td>PWM1.3 / GPIO ← onboard LED</td><td><span class="badge bg-led">PWM / LED</span></td></tr>
+      <tr><td>P1.23</td><td>LED4 ★</td><td>PWM1.4 / GPIO ← onboard LED</td><td><span class="badge bg-led">PWM / LED</span></td></tr>
+      <tr><td>P1.24</td><td>—</td><td>PWM1.5 / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P1.26</td><td>—</td><td>PWM1.6 / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P1.30</td><td>p19</td><td>ADC0.4 / USB VBUS / GPIO</td><td><span class="badge bg-analog">Analog In</span></td></tr>
+      <tr><td>P1.31</td><td>p20</td><td>ADC0.5 / USB SCL / GPIO</td><td><span class="badge bg-analog">Analog In</span></td></tr>
+    </table>
+  </div>
+
+  <!-- PORT 2 -->
+  <div class="section">
+    <div class="sec-head p2">PORT 2 — 14 pins ✅ Supports GPIO Interrupts</div>
+    <table>
+      <tr><th>Pin</th><th>mbed label</th><th>Functions</th><th>Type</th></tr>
+      <tr style="background: rgba(0,255,136,0.07);"><td><strong>P2.0</strong></td><td><strong>p26</strong></td><td>PWM2.1 / UART1 TX / GPIO &nbsp;<span class="badge bg-our-code">✅ BUTTON in our code (corrected)</span></td><td><span class="badge bg-int">Interrupt pin</span></td></tr>
+      <tr><td>P2.1</td><td>p25</td><td>PWM1.2 / UART1 RX / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P2.2</td><td>p24</td><td>PWM1.3 / UART1 CTS / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P2.3</td><td>p23</td><td>PWM1.4 / UART1 DCD / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P2.4</td><td>p22</td><td>PWM1.5 / UART1 DSR / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr><td>P2.5</td><td>p21</td><td>PWM1.6 / UART1 RTS / GPIO</td><td><span class="badge bg-pwm">PWM</span></td></tr>
+      <tr style="opacity:0.5;"><td>P2.10</td><td>EINT0 ★</td><td>EINT0 / NMI / GPIO &nbsp;<span class="badge bg-old-note">❌ NOT exposed on mbed board</span></td><td><span class="badge bg-int">Interrupt pin</span></td></tr>
+      <tr><td>P2.11</td><td>—</td><td>EINT1 / I2STX CLK / GPIO</td><td><span class="badge bg-int">Interrupt pin</span></td></tr>
+      <tr><td>P2.12</td><td>—</td><td>EINT2 / I2STX WS / GPIO</td><td><span class="badge bg-int">Interrupt pin</span></td></tr>
+      <tr><td>P2.13</td><td>—</td><td>EINT3 / I2STX SD / GPIO</td><td><span class="badge bg-int">Interrupt pin</span></td></tr>
+    </table>
+  </div>
+
+  <!-- PORT 3 & 4 -->
+  <div class="section">
+    <div class="sec-head p34">PORT 3 and PORT 4 — only 2 pins each · no interrupt support</div>
+    <table>
+      <tr><th>Pin</th><th>mbed label</th><th>Functions</th><th>Type</th></tr>
+      <tr><td>P3.25</td><td>—</td><td>GPIO only</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P3.26</td><td>—</td><td>GPIO only</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P4.28</td><td>—</td><td>GPIO only</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+      <tr><td>P4.29</td><td>—</td><td>GPIO only</td><td><span class="badge bg-gpio">GPIO</span></td></tr>
+    </table>
+  </div>
+
+  <div style="font-size:11px; color: var(--color-text-secondary); text-align:center; margin-top:8px;">
+    ★ = special function pin &nbsp;|&nbsp; Green highlight = pin used in corrected code &nbsp;|&nbsp; Faded row = original (incorrect) pin
+  </div>
+</div>
