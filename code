@@ -1,40 +1,138 @@
+//header files
+#include "mbed.h"
 #include "LPC17xx.h"
 
-void EINT3_IRQHandler(void)
+//we are defining pin
+#define BTN_PIN          6
+#define BTN_PINSEL_SHIFT (BTN_PIN * 2)
+#define BTN_MASK         (1UL << BTN_PIN)
+
+//we are defining which leds we will operate on
+#define LED1_MASK        (1UL << 18)
+#define LED2_MASK        (1UL << 20)
+#define LED3_MASK        (1UL << 21)
+#define LED4_MASK        (1UL << 23)
+//we are making a led mask so that we can command all led together
+#define ALL_LEDS_MASK    (LED1_MASK | LED2_MASK | LED3_MASK | LED4_MASK)
+
+//removes switch bounching
+#define DEBOUNCE_MS      50
+
+//stores one button event
+typedef struct {
+    uint8_t  state;
+    uint32_t pressCount;
+    uint32_t releaseCount;
+    uint32_t timestamp_ms;
+} BtnEvent;
+
+//global variables
+volatile uint8_t   btnState     = 0;
+volatile uint8_t   eventReady   = 0;
+volatile uint32_t  pressCount   = 0;
+volatile uint32_t  releaseCount = 0;
+volatile BtnEvent  pendingEvent;
+
+Timer sysTimer;
+
+void my_EINT3_IRQHandler(void)
 {
-    if (LPC_GPIOINT->IO2IntStatR & (1 << 0))
-    {
-        LPC_GPIO1->FIOPIN ^= (1 << 18);
-        LPC_GPIOINT->IO2IntClr = (1 << 0);
+    LPC_GPIOINT->IO0IntClr = BTN_MASK;
+    __DSB();//data synchronizing barrirer ensures the interrupt completes before continue
+
+    uint32_t now     = (uint32_t)sysTimer.read_ms();
+    uint8_t  pinHigh = (LPC_GPIO0->FIOPIN & BTN_MASK) ? 1 : 0;
+
+    static uint32_t lastEventTime = 0;
+
+//debounce check
+    if ((now - lastEventTime) < DEBOUNCE_MS)
+        return;
+
+    if (pinHigh == btnState)
+        return;
+
+    lastEventTime = now;
+    btnState      = pinHigh;
+
+    if (btnState == 1) {
+        LPC_GPIO1->FIOCLR = ALL_LEDS_MASK;
+        pressCount++;
+    } else {
+        LPC_GPIO1->FIOSET = ALL_LEDS_MASK;
+        releaseCount++;
     }
+
+//storing data
+    pendingEvent.state        = btnState;
+    pendingEvent.pressCount   = pressCount;
+    pendingEvent.releaseCount = releaseCount;
+    pendingEvent.timestamp_ms = now;
+
+    eventReady = 1;
 }
 
 void GPIO_Interrupt_Init(void)
 {
-    // Enable internal pull-down resistor on P2.0 — no external resistor needed!
-    LPC_PINCON->PINMODE4 |= (3 << 0);
+    LPC_PINCON->PINSEL0  &= ~(3UL << BTN_PINSEL_SHIFT);
+    LPC_PINCON->PINMODE0 &= ~(3UL << BTN_PINSEL_SHIFT);
+    LPC_PINCON->PINMODE0 |=  (2UL << BTN_PINSEL_SHIFT);
 
-    // Set P2.0 (mbed p26) as INPUT for button
-    LPC_GPIO2->FIODIR &= ~(1 << 0);
+    LPC_GPIO0->FIODIR &= ~BTN_MASK;
 
-    // Set P1.18 (mbed LED1) as OUTPUT for LED
-    LPC_GPIO1->FIODIR |= (1 << 18);
+    LPC_GPIO1->FIODIR |= ALL_LEDS_MASK;
+    LPC_GPIO1->FIOSET  = ALL_LEDS_MASK;
 
-    // Enable Rising Edge interrupt on P2.0
-    LPC_GPIOINT->IO2IntEnR |= (1 << 0);
+    LPC_GPIOINT->IO0IntClr  = BTN_MASK;
+    LPC_GPIOINT->IO0IntEnR |= BTN_MASK;
+    LPC_GPIOINT->IO0IntEnF |= BTN_MASK;
 
-    // Clear any pending interrupt before enabling
-    LPC_GPIOINT->IO2IntClr = (1 << 0);
-
-    // Enable EINT3 in NVIC
+    NVIC_SetVector(EINT3_IRQn, (uint32_t)my_EINT3_IRQHandler);
+    NVIC_SetPriority(EINT3_IRQn, 5);
     NVIC_EnableIRQ(EINT3_IRQn);
 }
 
 int main(void)
 {
+    sysTimer.start();
     GPIO_Interrupt_Init();
-    while(1)
+
+    printf("\r\n=== GPIO Interrupt Monitor ===\r\n");
+    printf("Button : P0.6 (p8) | LEDs : P1.18, P1.20, P1.21, P1.23\r\n");
+    printf("Pin idle : %s\r\n",
+           (LPC_GPIO0->FIOPIN & BTN_MASK) ? "HIGH" : "LOW");
+
+    printf("------------------------------\r\n");
+
+    printf("%-10s %-8s %-8s %s\r\n",
+           "Event", "Press", "Release", "Time(ms)");
+
+    printf("==============================\r\n\r\n");
+
+    while (1)
     {
-        // CPU free — interrupt handles button automatically
+        if (eventReady)
+        {
+            __disable_irq();
+
+            BtnEvent ev;
+
+            ev.state        = pendingEvent.state;
+            ev.pressCount   = pendingEvent.pressCount;
+            ev.releaseCount = pendingEvent.releaseCount;
+            ev.timestamp_ms = pendingEvent.timestamp_ms;
+
+            eventReady = 0;
+
+            __enable_irq();
+
+            printf("[%-8s] Press: %-4u Release: %-4u Time: %u ms\r\n",
+                   (ev.state == 1) ? "DOWN" : "UP",
+                   ev.pressCount,
+                   ev.releaseCount,
+                   ev.timestamp_ms);
+        }
+
+        wait_us(10000);
     }
 }
